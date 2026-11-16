@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "New music is on the way",
+    "category": "Music update",
+    "description": "A fresh chapter is taking shape in the studio.",
+    "date": "2026-11-16"
+  },
+  {
+    "id": 2,
+    "title": "Winter Sound Sessions",
+    "category": "Live update",
+    "description": "See the tour page for the latest sample event listing.",
+    "date": "2026-11-16"
+  }
+]
