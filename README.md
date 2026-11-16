@@ -1,6 +1,4 @@
-# Modern Musician — Sneha’s Assessment 3 Mini-Project
-
-This is an **independent mini-project containing only Sneha’s assigned contribution** from the five-person Assessment 3 project. It is not the complete group project.
+# Modern Musician 
 
 ## Scope
 - Node.js and Express application/server setup.
@@ -11,25 +9,6 @@ This is an **independent mini-project containing only Sneha’s assigned contrib
 - Local JSON announcements API with GET, POST, PUT and DELETE.
 - Homepage fetches and displays announcements from `/api/updates`.
 
-## Structure
-```text
-Sneha_Assessment3_Mini_Project/
-├── public/
-│   ├── index.html
-│   ├── css/style.css
-│   └── js/main.js
-├── src/
-│   ├── config/database.js
-│   ├── controllers/updateController.js
-│   ├── data/updates.json
-│   └── routes/updateRoutes.js
-├── app.js
-├── server.js
-├── package.json
-├── .env.example
-├── .gitignore
-└── README.md
-```
 
 ## Run
 1. Install Node.js.
