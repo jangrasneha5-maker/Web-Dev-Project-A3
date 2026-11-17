@@ -79,5 +79,4 @@ or other members' modules were changed. Phase 1 uses substantive commits for the
 backend import, static page, model tests, API tests and this handover. The overall
 eight-commit target has not been padded with empty or artificial commits.
 
-**Stop here. Phase 2 requires the user's explicit confirmation that the team
-leader approved the Discography changes.**
+The team leader subsequently rejected the proposed Discography changes. Phase 2 is permanently cancelled for this task. See [final approved evidence](FINAL-EVIDENCE.md) for the completed testing and handover.
