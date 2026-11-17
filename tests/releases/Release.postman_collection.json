@@ -1,0 +1,217 @@
+{
+  "info": {
+    "name": "Rishita - Original Release CRUD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Five original Release routes prepared for an isolated disposable test database after shared backend integration. Set baseUrl to that test server and run requests in order. POST generates a unique title and captures releaseId for GET, PUT and DELETE. Expected responses follow the original shared CRUD helper. Live Release API and Postman execution are pending integration."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "releaseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testTitle",
+      "value": "Rishita disposable Release test",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Get all releases",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Release list', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/releases",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "releases"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Create disposable release",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('testTitle', 'Rishita disposable Release ' + pm.variables.replaceIn('{{$guid}}'));",
+              "pm.collectionVariables.set('releaseId', '');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Created release and captured ID', function () { const data = pm.response.json(); pm.expect(data.message).to.eql('Release created successfully.'); pm.expect(data.record._id).to.match(/^[a-f0-9]{24}$/i); pm.expect(data.record.title).to.eql(pm.collectionVariables.get('testTitle')); pm.collectionVariables.set('releaseId', data.record._id); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/releases",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "releases"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{testTitle}}\",\n  \"artist\": \"Assessment test musician\",\n  \"genre\": \"Alternative\",\n  \"releaseYear\": 2026,\n  \"artwork\": \"\",\n  \"description\": \"Disposable record for Release API testing.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Get created release by ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Selected release', function () { const data = pm.response.json(); pm.expect(data._id).to.eql(pm.collectionVariables.get('releaseId')); pm.expect(data.title).to.eql(pm.collectionVariables.get('testTitle')); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/releases/{{releaseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "releases",
+            "{{releaseId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Update disposable release",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Selected release updated', function () { const data = pm.response.json(); pm.expect(data.message).to.eql('Release updated successfully.'); pm.expect(data.record._id).to.eql(pm.collectionVariables.get('releaseId')); pm.expect(data.record.title).to.eql(pm.collectionVariables.get('testTitle') + ' edited'); pm.expect(data.record.releaseYear).to.eql(2026); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/releases/{{releaseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "releases",
+            "{{releaseId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{testTitle}} edited\",\n  \"releaseYear\": 2026\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Delete disposable release",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Selected release deleted', function () { pm.expect(pm.response.json().message).to.eql('Release deleted successfully.'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/releases/{{releaseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "releases",
+            "{{releaseId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
