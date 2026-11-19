@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Modern Musician</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-wrap { max-width: 1120px; margin: 0 auto; padding: 70px 24px; }
+    .admin-panel { background: #111719; border: 1px solid #343b3d; border-radius: 16px; padding: 24px; margin: 24px 0; }
+    .admin-panel h2 { margin-top: 0; }
+    .admin-table-scroll { overflow-x: auto; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th, .admin-table td { text-align: left; padding: 12px; border-bottom: 1px solid #394244; overflow-wrap: anywhere; }
+    .admin-table button { margin: 3px; }
+    .admin-note { color: #b8c0bf; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Admin navigation">
+      <a class="logo" href="/index.html">MUSIC<span>.</span></a>
+      <a class="nav-cta" href="/index.html">View website ↗</a>
+    </nav>
+  </header>
+  <main class="admin-wrap">
+    <p class="eyebrow">Management space</p>
+    <h1>Admin <span>dashboard.</span></h1>
+    <p class="admin-note">Classroom demonstration. Dashboard access is open.</p>
+
+    <% const sections = [
+      { title: 'Releases in MongoDB', endpoint: 'releases', records: releases, columns: [
+        ['Title', 'title'], ['Artist', 'artist'], ['Genre', 'genre'], ['Year', 'releaseYear']
+      ], empty: 'No releases added yet.' },
+      { title: 'Tour events in MongoDB', endpoint: 'tour', records: events, columns: [
+        ['Event', 'eventName'], ['Venue', 'venue'], ['City', 'city'], ['Date', 'date'], ['Status', 'status']
+      ], empty: 'No tour events added yet.' },
+      { title: 'Contact messages', endpoint: 'messages', records: messages, columns: [
+        ['Name', 'name'], ['Email', 'email'], ['Topic', 'topic'], ['Message', 'message'], ['Received', 'submittedAt']
+      ], empty: 'No contact messages received yet.' }
+    ]; %>
+    <% for (const { title, endpoint, records, columns, empty } of sections) { %>
+      <section class="admin-panel">
+        <h2 id="<%= endpoint %>-heading"><%= title %></h2>
+        <% if (records === null) { %>
+          <p class="admin-note">Tour management becomes available when the group’s tour module is integrated.</p>
+        <% } else if (!records.length) { %>
+          <p class="admin-note"><%= empty %></p>
+        <% } else { %>
+          <div class="admin-table-scroll" tabindex="0" role="region" aria-labelledby="<%= endpoint %>-heading">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <% for (const [label] of columns) { %><th scope="col"><%= label %></th><% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (const record of records) { %>
+                  <tr>
+                    <% for (const [, field] of columns) { %>
+                      <td><%= record[field] instanceof Date ? record[field].toISOString().slice(0, 10) : record[field] %></td>
+                    <% } %>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </section>
+    <% } %>
+  </main>
+</body>
+</html>
