@@ -16,7 +16,14 @@
     .admin-table th, .admin-table td { text-align: left; padding: 12px; border-bottom: 1px solid #394244; overflow-wrap: anywhere; }
     .admin-table button { margin: 3px; }
     .admin-note { color: #b8c0bf; font-size: 13px; }
+    .admin-form { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .admin-form label { display: grid; gap: 4px; font-size: 13px; }
+    .admin-form input, .admin-form select, .admin-form textarea { width: 100%; min-width: 0; padding: 12px; background: #20282a; border: 1px solid #465052; color: #fff; border-radius: 7px; font: inherit; }
+    .admin-actions { display: flex; flex-wrap: wrap; gap: 8px; grid-column: 1 / -1; }
+    .admin-actions [hidden] { display: none; }
+    @media (max-width: 700px) { .admin-form { grid-template-columns: 1fr; } }
   </style>
+  <script src="/js/admin.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -30,6 +37,18 @@
     <h1>Admin <span>dashboard.</span></h1>
     <p class="admin-note">Classroom demonstration. Dashboard access is open.</p>
 
+    <% const forms = {
+      releases: { label: 'release', fields: [
+        ['title', 'Title', 'text', true], ['artist', 'Artist', 'text', true],
+        ['genre', 'Genre', 'text', true], ['releaseYear', 'Release year', 'number', true],
+        ['artwork', 'Artwork URL', 'text'], ['description', 'Description', 'textarea']
+      ] },
+      tour: { label: 'tour event', fields: [
+        ['eventName', 'Event name', 'text', true], ['venue', 'Venue', 'text', true],
+        ['city', 'City', 'text', true], ['date', 'Date', 'date', true],
+        ['time', 'Time', 'text'], ['ticketLink', 'Ticket URL', 'text'], ['status', 'Status', 'status']
+      ] }
+    }; %>
     <% const sections = [
       { title: 'Releases in MongoDB', endpoint: 'releases', records: releases, columns: [
         ['Title', 'title'], ['Artist', 'artist'], ['Genre', 'genre'], ['Year', 'releaseYear']
@@ -42,8 +61,31 @@
       ], empty: 'No contact messages received yet.' }
     ]; %>
     <% for (const { title, endpoint, records, columns, empty } of sections) { %>
-      <section class="admin-panel">
+      <section class="admin-panel" data-endpoint="<%= endpoint %>">
         <h2 id="<%= endpoint %>-heading"><%= title %></h2>
+        <% const form = forms[endpoint]; %>
+        <% if (form && records !== null) { %>
+          <form data-label="<%= form.label %>" aria-labelledby="<%= endpoint %>-heading">
+            <fieldset class="admin-form">
+              <% for (const [name, label, type, required] of form.fields) { %>
+                <label><%= label %>
+                  <% if (type === 'textarea') { %>
+                    <textarea name="<%= name %>"></textarea>
+                  <% } else if (type === 'status') { %>
+                    <select name="<%= name %>"><option value="upcoming">Upcoming</option><option value="past">Past</option></select>
+                  <% } else { %>
+                    <input name="<%= name %>" type="<%= type %>" <%= required ? 'required' : '' %><% if (type === 'number') { %> min="1900" max="2100"<% } %>>
+                  <% } %>
+                </label>
+              <% } %>
+              <div class="admin-actions">
+                <button class="button button-primary" type="submit">Add <%= form.label %></button>
+                <button class="button button-outline" type="reset" hidden>Cancel edit</button>
+              </div>
+            </fieldset>
+          </form>
+        <% } %>
+        <p class="admin-note" role="status"></p>
         <% if (records === null) { %>
           <p class="admin-note">Tour management becomes available when the group’s tour module is integrated.</p>
         <% } else if (!records.length) { %>
@@ -54,6 +96,7 @@
               <thead>
                 <tr>
                   <% for (const [label] of columns) { %><th scope="col"><%= label %></th><% } %>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -62,6 +105,12 @@
                     <% for (const [, field] of columns) { %>
                       <td><%= record[field] instanceof Date ? record[field].toISOString().slice(0, 10) : record[field] %></td>
                     <% } %>
+                    <td>
+                      <% if (form) { %>
+                        <button class="button button-outline" type="button" data-action="edit" data-id="<%= record._id %>">Edit</button>
+                      <% } %>
+                      <button class="button button-outline" type="button" data-action="delete" data-id="<%= record._id %>">Delete</button>
+                    </td>
                   </tr>
                 <% } %>
               </tbody>
