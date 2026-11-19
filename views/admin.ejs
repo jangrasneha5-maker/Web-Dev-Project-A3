@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="/css/style.css">
   <style>
     .admin-wrap { max-width: 1120px; margin: 0 auto; padding: 70px 24px; }
+    .admin-wrap h1 { font-size: clamp(2.1rem, 9vw, 5rem); }
     .admin-panel { background: #111719; border: 1px solid #343b3d; border-radius: 16px; padding: 24px; margin: 24px 0; }
     .admin-panel h2 { margin-top: 0; }
     .admin-table-scroll { overflow-x: auto; }
-    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13px; }
     .admin-table th, .admin-table td { text-align: left; padding: 12px; border-bottom: 1px solid #394244; overflow-wrap: anywhere; }
+    .admin-table th, .admin-table td:last-child { white-space: nowrap; }
     .admin-table button { margin: 3px; }
     .admin-note { color: #b8c0bf; font-size: 13px; }
     .admin-form { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
