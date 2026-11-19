@@ -18,4 +18,3 @@ app.use('/api/updates', require('./src/routes/updateRoutes'));
 app.get('/api/test', (req, res) => res.json({ message: 'Sneha mini-project API is working!' }));
 app.use((req, res) => res.status(404).json({ message: 'Route not found.' }));
 module.exports = app;
-
