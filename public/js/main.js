@@ -146,3 +146,65 @@ if (updatesList != null) {
   }).catch(function () { updatesList.textContent = "Updates are temporarily unavailable."; });
 }
 
+
+
+// --------------------------------------------------
+// 6. FILTER TOUR DATES
+// --------------------------------------------------
+var tourFilterButtons = document.getElementsByClassName("filter-chip");
+var tourEvents = document.getElementsByClassName("tour-event");
+
+function filterTours(selectedFilter) {
+  for (var g = 0; g < tourEvents.length; g++) {
+    var eventStatus = tourEvents[g].getAttribute("data-status");
+
+    if (selectedFilter === "all" || eventStatus === selectedFilter) {
+      tourEvents[g].style.display = "";
+    } else {
+      tourEvents[g].style.display = "none";
+    }
+  }
+
+  for (var h = 0; h < tourFilterButtons.length; h++) {
+    if (tourFilterButtons[h].getAttribute("data-tour-filter") === selectedFilter) {
+      addCssClass(tourFilterButtons[h], "active");
+    } else {
+      removeCssClass(tourFilterButtons[h], "active");
+    }
+  }
+}
+
+for (let i = 0; i < tourFilterButtons.length; i++) {
+  tourFilterButtons[i].addEventListener("click", function () {
+    var selectedFilter = tourFilterButtons[i].getAttribute("data-tour-filter");
+    filterTours(selectedFilter);
+  });
+}
+
+
+
+// Display tour records created in MongoDB. Existing sample cards remain as fallback.
+var tourList = document.getElementById("tour-list");
+if (tourList != null) {
+  fetch("/api/tour").then(function (response) { return response.json(); }).then(function (events) {
+    if (!Array.isArray(events) || events.length === 0) return;
+    tourList.innerHTML = "";
+    for (var t = 0; t < events.length; t++) {
+      var eventCard = document.createElement("article"); eventCard.className = "tour-event"; eventCard.setAttribute("data-status", events[t].status);
+      var date = new Date(events[t].date);
+      var dateBox = document.createElement("div"); dateBox.className = "tour-date";
+      var month = document.createElement("span"); month.textContent = date.toLocaleString("en", { month: "short" }).toUpperCase();
+      var day = document.createElement("strong"); day.textContent = date.getDate();
+      var year = document.createElement("small"); year.textContent = date.getFullYear();
+      dateBox.appendChild(month); dateBox.appendChild(day); dateBox.appendChild(year);
+      var main = document.createElement("div"); main.className = "tour-event-main";
+      var heading = document.createElement("h3"); heading.textContent = events[t].eventName;
+      var venue = document.createElement("p"); venue.textContent = events[t].city + " · " + events[t].venue;
+      main.appendChild(heading); main.appendChild(venue);
+      var status = document.createElement("span"); status.className = "event-state"; status.textContent = events[t].status;
+      eventCard.appendChild(dateBox); eventCard.appendChild(main); eventCard.appendChild(status);
+      if (events[t].ticketLink) { var ticket = document.createElement("a"); ticket.className = "button button-outline"; ticket.href = events[t].ticketLink; ticket.target = "_blank"; ticket.rel = "noopener"; ticket.textContent = "Tickets ↗"; eventCard.appendChild(ticket); }
+      tourList.appendChild(eventCard);
+    }
+  }).catch(function () { /* Keep the original sample tour cards visible if the API is unavailable. */ });
+}
