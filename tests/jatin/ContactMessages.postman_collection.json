@@ -1,0 +1,131 @@
+{
+  "info": {
+    "name": "Modern Musician — Contact Messages",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Reject invalid contact",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/messages",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Demo\",\n  \"email\": \"invalid\",\n  \"topic\": \"booking\",\n  \"message\": \"Please share your live booking details.\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('Email validation feedback', () => pm.expect(pm.response.json().message).to.match(/email/i));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Save contact",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/messages",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Demo\",\n  \"email\": \"postman@example.com\",\n  \"topic\": \"booking\",\n  \"message\": \"Please share your live booking details.\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "const id = pm.response.json().record._id;",
+              "pm.test('Created record has an ID', () => pm.expect(id).to.match(/^[a-f0-9]{24}$/));",
+              "pm.collectionVariables.set('messageId', id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List contacts",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/messages"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Saved message is listed', () => pm.expect(pm.response.json().some(record => record._id === pm.collectionVariables.get('messageId'))).to.equal(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete test contact",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/messages/{{messageId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Deletion confirmed', () => pm.expect(pm.response.json().message).to.match(/deleted/i));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify deletion",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/messages/{{messageId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+              "pm.collectionVariables.unset('messageId');"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
